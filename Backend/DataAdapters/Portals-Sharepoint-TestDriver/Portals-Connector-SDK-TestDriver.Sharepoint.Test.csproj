@@ -6,9 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Graph" Version="4.25.0" />
-    <PackageReference Include="SmintIo.Portals.Connector.Test" Version="8.6.166" />
-    <PackageReference Include="SmintIo.Portals.DataAdapter.Test" Version="8.6.166" />
-    <PackageReference Include="SmintIo.Portals.DataAdapterSDK.TestDriver" Version="8.6.166" />
+    <PackageReference Include="SmintIo.Portals.Connector.Test" Version="8.6.167" />
+    <PackageReference Include="SmintIo.Portals.DataAdapter.Test" Version="8.6.167" />
+    <PackageReference Include="SmintIo.Portals.DataAdapterSDK.TestDriver" Version="8.6.167" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
