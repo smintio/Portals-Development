@@ -68,6 +68,8 @@ namespace SmintIo.Portals.DataAdapter.SharePoint.Assets
 
         public MetadataAttributeModel[] SmintIoPreserveMetadataAttributes { get; set; }
 
+        public bool SmintIoDisableMetadataSecurity { get; set; }
+
         public SmintIoDataSearchIndexFulltextSearchType SmintIoSearchIndexFulltextSearchType { get; set; }
 
         public bool SmintIoSearchIndexEnableAutoCompletion { get; set; }

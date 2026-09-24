@@ -30,7 +30,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Picturepark.SDK.V1" Version="11.14.35" />
-    <PackageReference Include="SmintIo.Portals.ConnectorSDK" Version="8.6.167" />
+    <PackageReference Include="SmintIo.Portals.ConnectorSDK" Version="8.6.170" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources\ConfigurationMessages.Designer.cs">
