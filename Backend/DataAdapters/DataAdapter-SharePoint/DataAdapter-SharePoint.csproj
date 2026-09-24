@@ -21,7 +21,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SmintIo.Portals.DataAdapterSDK" Version="8.6.170" />
+    <PackageReference Include="SmintIo.Portals.DataAdapterSDK" Version="8.6.171" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Connectors\Connector-SharePoint\Connector-SharePoint.csproj">
