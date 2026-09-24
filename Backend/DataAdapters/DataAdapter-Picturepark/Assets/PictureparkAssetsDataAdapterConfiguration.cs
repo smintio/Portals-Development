@@ -112,5 +112,7 @@ namespace SmintIo.Portals.DataAdapter.Picturepark.Assets
         public string[] HiResOutputOtherFileTypesFormatIdList { get; set; }
 
         public MetadataAttributeModel[] SmintIoPreserveMetadataAttributes { get; set; }
+
+        public bool SmintIoDisableMetadataSecurity { get; set; }
     }
 }
