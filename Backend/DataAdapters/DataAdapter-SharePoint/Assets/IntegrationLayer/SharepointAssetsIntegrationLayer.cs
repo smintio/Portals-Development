@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using SmintIo.Portals.Connector.SharePoint.Extensions;
 using SmintIo.Portals.Connector.SharePoint.Models;
 using SmintIo.Portals.DataAdapter.SharePoint.Assets.Common;
+using SmintIo.Portals.DataAdapter.SharePoint.Assets.Models;
 using SmintIo.Portals.DataAdapterSDK.DataAdapters.Impl;
 using SmintIo.Portals.DataAdapterSDK.DataAdapters.Interfaces.Assets;
 using SmintIo.Portals.DataAdapterSDK.DataAdapters.Interfaces.Assets.Models;
@@ -19,6 +21,8 @@ namespace SmintIo.Portals.DataAdapter.SharePoint.Assets
 {
     public partial class SharepointAssetsDataAdapter : AssetsDataAdapterBaseImpl, IAssetsIntegrationLayerApiProvider
     {
+        private const int ChangesChunkSize = 50;
+
         public bool IsSetup => _sharepointClient.IsSetup;
 
         public async Task<GetFolderContentsResult> GetFolderContentsForIntegrationLayerAsync(GetFolderContentsParameters parameters)
@@ -90,11 +94,19 @@ namespace SmintIo.Portals.DataAdapter.SharePoint.Assets
                 throw new ArgumentNullException(nameof(parameters));
             }
 
+            // A chunked continuation means we are in the middle of a page, so we fetch that page again
+
+            var chunkedContinuation = SharepointChunkedContinuationModel.TryParse(parameters.LastContinuationId);
+
+            var deltaLink = chunkedContinuation != null
+                ? chunkedContinuation.SharepointDeltaLink
+                : parameters.LastContinuationId;
+
             DriveItemChangesListModel driveItemsChangesList;
 
             try
             {
-                driveItemsChangesList = await _sharepointClient.GetDriveItemChangesListAsync(deltaLink: parameters.LastContinuationId).ConfigureAwait(false);
+                driveItemsChangesList = await _sharepointClient.GetDriveItemChangesListAsync(deltaLink).ConfigureAwait(false);
             }
             catch (ExternalDependencyException ex)
             when (ex.ErrorCode == ExternalDependencyStatusEnum.ContinuationUuidTooOld)
@@ -105,6 +117,8 @@ namespace SmintIo.Portals.DataAdapter.SharePoint.Assets
                 };
             }
 
+            var nextChunkedContinuation = TakeChangesChunk(driveItemsChangesList, chunkedContinuation, deltaLink);
+
             var changes = await GetChangesModelsAsync(driveItemsChangesList).ConfigureAwait(false);
 
             var changesResult = new GetChangesResult()
@@ -112,12 +126,77 @@ namespace SmintIo.Portals.DataAdapter.SharePoint.Assets
                 Changes = changes,
                 Details = new GetChangesDetailsModel
                 {
-                    ContinuationUuid = driveItemsChangesList?.ContinuationUuid
+                    ContinuationUuid = nextChunkedContinuation != null
+                        ? nextChunkedContinuation.Serialize()
+                        : driveItemsChangesList?.ContinuationUuid,
+                    HasMoreResults = nextChunkedContinuation != null ? true : null
                 },
                 ContinuationUuidTooOld = driveItemsChangesList?.ContinuationTooOld ?? false
             };
 
             return changesResult;
+        }
+
+        /// <summary>
+        /// SharePoint may return delta pages far bigger than the requested page size.
+        /// Reduces the page to the next chunk of drive items, and returns the continuation for the rest of the page,
+        /// or <c>null</c> if the chunk reaches the end of the page.
+        /// </summary>
+        private SharepointChunkedContinuationModel TakeChangesChunk(
+            DriveItemChangesListModel driveItemsChangesList,
+            SharepointChunkedContinuationModel chunkedContinuation,
+            string deltaLink)
+        {
+            if (driveItemsChangesList == null || driveItemsChangesList.ContinuationTooOld)
+            {
+                return null;
+            }
+
+            var driveItems = driveItemsChangesList.DriveItems.ToList();
+
+            var startIndex = 0;
+
+            if (chunkedContinuation != null)
+            {
+                // We resume after the last processed item, not after a count of items:
+                // an item that changes again moves to the end of the page, so counting could skip an item
+
+                var lastProcessedIndex = driveItems.FindIndex(di => string.Equals(di.GetAssetId(), chunkedContinuation.LastProcessedAssetId));
+
+                if (lastProcessedIndex >= 0)
+                {
+                    startIndex = lastProcessedIndex + 1;
+                }
+                else
+                {
+                    _logger.LogWarning($"Last processed drive item {chunkedContinuation.LastProcessedAssetId} not found when fetching the SharePoint page again, processing the page from the start");
+                }
+            }
+
+            var remainingDriveItems = driveItems.Skip(startIndex).ToList();
+
+            if (remainingDriveItems.Count <= ChangesChunkSize)
+            {
+                // The rest of the page fits, we continue with the continuation from SharePoint
+
+                driveItemsChangesList.DriveItems = remainingDriveItems;
+
+                return null;
+            }
+
+            var chunkDriveItems = remainingDriveItems.Take(ChangesChunkSize).ToList();
+
+            driveItemsChangesList.DriveItems = chunkDriveItems;
+
+            // Folders to delete recursively are reported with the last chunk of the page
+
+            driveItemsChangesList.FolderDriveItemsToDelete = new List<DriveItem>();
+
+            return new SharepointChunkedContinuationModel
+            {
+                SharepointDeltaLink = deltaLink,
+                LastProcessedAssetId = chunkDriveItems.Last().GetAssetId()
+            };
         }
 
         private static ChangeModel GetFolderChangeModel(FolderDataObject folderDataObject, ChangeType changeType, bool recursionIsHandledByDataAdapter)
