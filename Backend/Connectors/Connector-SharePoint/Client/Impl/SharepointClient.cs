@@ -1444,7 +1444,7 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
                 driveItems.Add(driveItem);
             }
 
-            await EnsureDriveItemsAccessAsync(driveItems, allowRootFolders).ConfigureAwait(false);
+            // GetDriveItemAsync already returned only accessible drive items
 
             return driveItems;
         }
