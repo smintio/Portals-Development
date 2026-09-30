@@ -1,12 +1,12 @@
 Custom forms
 ============
 
-Current version of this document is: 1.0.0 (as of 16th of September, 2026)
+Current version of this document is: 1.1.0 (as of 30th of September, 2026)
 
-A custom form adds administrator-defined fields to a standard Smint.io Portals object — a portal
-user group, a data adapter configuration, an assets search page configuration, or a resource. The
-form describes the fields once for the whole tenant; each object then carries its own values for
-them.
+A custom form adds administrator-defined fields to a standard Smint.io Portals object or flow — a
+portal user group, a data adapter configuration, an assets search page configuration or a resource,
+or the registration, request and upload forms a portal presents to its users. The form describes the
+fields once; each object, user or request then carries its own values for them.
 
 Custom forms are how configuration that Smint.io cannot anticipate gets into the platform. Their
 largest consumer is [Dynamic Content Routing](../DynamicContentRouting/README.md), whose scripts
@@ -28,6 +28,7 @@ there as they would for any other setting.
 1. [Conditional visibility](#user-content-conditional-visibility)
 1. [A complete example](#user-content-a-complete-example)
 1. [Managing a form through the API](#user-content-managing-a-form-through-the-api)
+1. [Attaching a form to the tenant](#user-content-attaching-a-form-to-the-tenant)
 1. [Filling in values](#user-content-filling-in-values)
 1. [How values reach a script](#user-content-how-values-reach-a-script)
 1. [Things that are easy to get wrong](#user-content-things-that-are-easy-to-get-wrong)
@@ -51,7 +52,35 @@ humans; ids are not localized and should not change once anything reads them.
 
 ## Attachment points
 
-A custom form is attached at **tenant level**, one form per attachment point:
+A custom form is attached in one of two ways:
+
+- **To a specific configuration**, where the form is one setting of that configuration and is
+  selected in the Portals administration.
+- **Tenant-wide**, to every object of one kind at once — all portal user groups, all assets search
+  page configurations, and so on. These assignments are tenant settings and currently have no
+  administrative user interface.
+
+### Attached to a specific configuration
+
+Some configurations have a **Custom form** setting of their own. It is selected in the Portals
+administration from the tenant's forms, like any other setting, and applies only where that
+configuration is used — one login system, one request form component, one upload data adapter.
+
+| Configuration | Setting | The form is used for |
+|---|---|---|
+| Login system of type Smint.io | `CustomFormId` | the registration form. Values are stored on the portal user, shown on the user in the Portals administration, and included in download reports. With **Custom form can be changed in self service**, users can edit their values in their account |
+| Request download form component (`ui-generic-request-download-form-1`) | `requestRequestDownloadCustomFormId` | the form of a download request, for the approval process and simple form task handlers. Values are stored with the task and with the resulting download event, and included in download reports |
+| Request access, request permission and generic request form components (`ui-generic-request-access-form-1`, `ui-generic-request-permission-form-1`, `ui-generic-request-generic-form-1`) | `requestRequest…CustomFormId` | the form of the request the component submits |
+| Asset upload data adapters | `CustomFormId` | the form used when uploading |
+
+These settings are shown only in the **Expert** view of the login system and the request form
+components, and in the **Advanced** view of an upload data adapter. Switch the configuration editor
+to that view if the setting is not visible.
+
+### Attached tenant-wide
+
+For the four object types below, the form is assigned at **tenant level**, one form per attachment
+point — see [Attaching a form to the tenant](#user-content-attaching-a-form-to-the-tenant):
 
 | Attachment point | Values are filled in on | Read by a routing script with |
 |---|---|---|
@@ -60,7 +89,7 @@ A custom form is attached at **tenant level**, one form per attachment point:
 | Assets search page configuration | each assets search page configuration | `getPage…CustomFormFieldValue(s)(id)` |
 | Resource | each resource, per resource type | — |
 
-This is the single most important structural fact about custom forms: **one definition per tenant
+This is the most important structural fact about tenant-wide forms: **one definition per tenant
 per attachment point**. Every portal user group in the tenant shares one form and fills in its own
 values. You cannot give two user groups different fields — only different values for the same
 fields.
@@ -349,8 +378,9 @@ administrator will fill in and expect to matter.
 | Delete a form | `DELETE /customForms/{customFormUuid}?version=<version>` |
 | Read a form's groups | `GET /customForm/{customFormUuid}/formGroups` |
 
-Creating a form returns its UUID; attaching it to an object type is a tenant-level setting that
-names that UUID.
+Creating a form returns its UUID. Creating it does not attach it to anything: until it is selected
+in a configuration or assigned in the tenant settings, the form does nothing. See
+[Attachment points](#user-content-attachment-points).
 
 `version` is optimistic locking. Pass the version you read; if the form has changed since, the
 request is rejected rather than overwriting somebody else's edit. Forms are versioned, and values
@@ -361,6 +391,51 @@ under version 3 can still be interpreted after the form moves to version 4.
 
 A form that is no longer wanted can be marked `disabled` rather than deleted, which stops it being
 offered without discarding the values already recorded against it.
+
+## Attaching a form to the tenant
+
+This applies to the [tenant-wide attachment points](#user-content-attached-tenant-wide) only. A
+form selected in a specific configuration needs no tenant setting.
+
+A tenant-wide form takes effect only once its UUID is assigned in the tenant settings. Each
+attachment point has one field on the tenant:
+
+| Attachment point | Tenant field |
+|---|---|
+| Frontend user group | `frontend_user_group_custom_form_uuid` |
+| Data adapter configuration | `data_adapter_configuration_custom_form_uuid` |
+| Assets search page configuration | `assets_search_page_configuration_custom_form_uuid` |
+| Resource | `resource_custom_form_uuids` — an array of `{ "resource_type", "custom_form_uuid" }` |
+
+Unlike a configuration's **Custom form** setting, a tenant-wide assignment currently has no
+administrative user interface. It is made by updating the tenant through the backend API:
+
+```
+PUT /tenants/{tenantUuid}?version=<version>
+```
+
+```json
+{
+  "frontend_user_group_custom_form_uuid": "<customFormUuid>"
+}
+```
+
+Only the fields you send change. Sending `null` removes the assignment. The form must already
+exist in the same tenant — an unknown UUID is rejected. The caller must be a backend user in the
+tenant's system backend user group.
+
+**Until the form is assigned, it is invisible, and values sent for it are lost.** For a frontend
+user group, specifically:
+
+- the user group editor in the Portals administration shows no custom form panel — the panel is
+  rendered only when the backend returns the form's groups with the user group, and it does that
+  only for an assigned form;
+- `custom_form_field_values` sent when creating or updating a user group are ignored without an
+  error — the request succeeds and nothing is stored;
+- every `getUser…CustomFormFieldValues` accessor in a routing script returns `null`.
+
+So the order is always: create the form, assign it to the tenant, then fill in values. Values
+provisioned before the assignment have to be sent again.
 
 ## Filling in values
 
@@ -387,8 +462,9 @@ item's `id`, repeats its `data_type`, and carries the value in the matching slot
 ]
 ```
 
-Administrators normally do this through the Portals administration, where the form renders as a
-panel on the object. The API shape matters when values are provisioned programmatically — from an
+For a tenant-wide form, administrators normally do this through the Portals administration, where
+the form renders as a panel on the object. A form attached to a registration, request or upload
+configuration is filled in by the portal user in that flow. The API shape matters when values are provisioned programmatically — from an
 identity provider's claims, or from a nightly synchronisation with the system of record for
 entitlements.
 
@@ -419,6 +495,9 @@ for a credential, an internal note, or anything whose disclosure would matter.
 
 ## Things that are easy to get wrong
 
+- **Creating a tenant-wide form but not assigning it.** A form for portal user groups, pages, data
+  adapters or resources does nothing until its UUID is set on the tenant. No panel appears in the
+  administration, and values sent through the API are dropped without an error.
 - **Expecting per-group fields.** One form per tenant per attachment point. Groups differ in their
   values, never in their fields.
 - **Reading a user value as a scalar.** It is always an array, merged across the user's groups,
