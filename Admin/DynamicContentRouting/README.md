@@ -1,7 +1,7 @@
 Dynamic Content Routing
 =======================
 
-Current version of this document is: 1.0.0 (as of 16th of September, 2026)
+Current version of this document is: 1.1.0 (as of 30th of September, 2026)
 
 Dynamic Content Routing decides, per request and per user, which assets a Smint.io Portal shows
 and which assets a user may open or download. It derives that decision from the asset's own
@@ -129,6 +129,19 @@ which market or classification they are assigned to.
 
 ## Configuring it
 
+Setting up a routing scheme takes these steps, in this order:
+
+1. **Create the custom form** through the backend API — see
+   [Defining a form](../CustomForms/README.md#user-content-defining-a-form).
+1. **Assign the form to the tenant**, also through the backend API — see
+   [Attaching a form to the tenant](../CustomForms/README.md#user-content-attaching-a-form-to-the-tenant).
+   Until then, the user group editor shows no custom form panel, and values sent through the API are
+   dropped without an error.
+1. **Fill in the values** on the portal user groups, and on pages or data adapters where the scheme
+   uses them.
+1. **Create the data processor configuration**, write both scripts, and attach it to the data adapter
+   configurations it should govern.
+
 Dynamic Content Routing is configured as a data processor. An administrator creates a data
 processor configuration from it and attaches that configuration to the data adapter
 configurations it should govern.
@@ -240,6 +253,7 @@ The failure modes worth knowing on sight:
 | Every asset is visible, routing appears to do nothing | the search fragment id is wrong, or written in the expanded form |
 | Search is correctly narrowed, detail page refuses the asset | the two scripts disagree — most often the asset path is written in the shortened form |
 | Everything is denied for everyone | an empty allow-list is being matched literally, or an enum is being compared against display names |
+| The user group editor shows no custom form panel, and user values read as `null` | the form was created but never assigned to the tenant |
 | A page that reads several assets shows nothing at all | one asset in the batch is denied, and a denial fails the whole call |
 | Intermittent execution errors under load | the statement or time budget is being exceeded |
 
