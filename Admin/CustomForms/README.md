@@ -107,15 +107,15 @@ The form definition is a JSON document posted to the backend API. The minimum th
 
 ```json
 {
-  "name": [{ "culture": "en", "value": "Portal user group settings" }],
+  "name": [{ "culture": "x-default", "value": "Portal user group settings" }],
   "custom_form_groups": [
     {
       "id": "contentRouting",
-      "name": [{ "culture": "en", "value": "Content routing" }],
+      "name": [{ "culture": "x-default", "value": "Content routing" }],
       "form_items": [
         {
           "id": "regions",
-          "name": [{ "culture": "en", "value": "Regions" }],
+          "name": [{ "culture": "x-default", "value": "Regions" }],
           "data_type": "string_array",
           "visibility": "basic"
         }
@@ -225,20 +225,20 @@ description:
 ```json
 {
   "id": "regions",
-  "name": [{ "culture": "en", "value": "Regions" }],
+  "name": [{ "culture": "x-default", "value": "Regions" }],
   "data_type": "string_array",
   "visibility": "basic",
   "allowed_values": [
     {
       "string_value": "emea",
       "name": [
-        { "culture": "en", "value": "Europe, Middle East and Africa" },
+        { "culture": "x-default", "value": "Europe, Middle East and Africa" },
         { "culture": "de", "value": "Europa, Naher Osten und Afrika" }
       ]
     },
     {
       "string_value": "amer",
-      "name": [{ "culture": "en", "value": "Americas" }]
+      "name": [{ "culture": "x-default", "value": "Americas" }]
     }
   ]
 }
@@ -299,25 +299,25 @@ classification, and an early-access flag.
 ```json
 {
   "name": [
-    { "culture": "en", "value": "Portal user group settings" },
+    { "culture": "x-default", "value": "Portal user group settings" },
     { "culture": "de", "value": "Portal-Benutzergruppen-Einstellungen" }
   ],
   "description": [
-    { "culture": "en", "value": "Content routing settings applied to the members of this group." }
+    { "culture": "x-default", "value": "Content routing settings applied to the members of this group." }
   ],
   "custom_form_groups": [
     {
       "id": "contentRouting",
-      "name": [{ "culture": "en", "value": "Content routing" }],
+      "name": [{ "culture": "x-default", "value": "Content routing" }],
       "description": [
-        { "culture": "en", "value": "Determines which assets members of this group can see and download." }
+        { "culture": "x-default", "value": "Determines which assets members of this group can see and download." }
       ],
       "form_items": [
         {
           "id": "regions",
-          "name": [{ "culture": "en", "value": "Regions" }],
+          "name": [{ "culture": "x-default", "value": "Regions" }],
           "description": [
-            { "culture": "en", "value": "Members see assets released for any of these regions. Leave empty to grant no regions." }
+            { "culture": "x-default", "value": "Members see assets released for any of these regions. Leave empty to grant no regions." }
           ],
           "data_type": "string_array",
           "visibility": "basic",
@@ -325,14 +325,14 @@ classification, and an early-access flag.
           "column_count_desktop": 6,
           "column_count_mobile": 12,
           "allowed_values": [
-            { "string_value": "emea", "name": [{ "culture": "en", "value": "Europe, Middle East and Africa" }] },
-            { "string_value": "amer", "name": [{ "culture": "en", "value": "Americas" }] },
-            { "string_value": "apac", "name": [{ "culture": "en", "value": "Asia Pacific" }] }
+            { "string_value": "emea", "name": [{ "culture": "x-default", "value": "Europe, Middle East and Africa" }] },
+            { "string_value": "amer", "name": [{ "culture": "x-default", "value": "Americas" }] },
+            { "string_value": "apac", "name": [{ "culture": "x-default", "value": "Asia Pacific" }] }
           ]
         },
         {
           "id": "securityClassification",
-          "name": [{ "culture": "en", "value": "Highest security classification" }],
+          "name": [{ "culture": "x-default", "value": "Highest security classification" }],
           "data_type": "string",
           "visibility": "basic",
           "is_required": true,
@@ -341,15 +341,15 @@ classification, and an early-access flag.
           "column_count_mobile": 12,
           "default_string_value": "notRestricted",
           "allowed_values": [
-            { "string_value": "notRestricted", "name": [{ "culture": "en", "value": "Not restricted" }] },
-            { "string_value": "internal", "name": [{ "culture": "en", "value": "Internal" }] },
-            { "string_value": "confidential", "name": [{ "culture": "en", "value": "Confidential" }] }
+            { "string_value": "notRestricted", "name": [{ "culture": "x-default", "value": "Not restricted" }] },
+            { "string_value": "internal", "name": [{ "culture": "x-default", "value": "Internal" }] },
+            { "string_value": "confidential", "name": [{ "culture": "x-default", "value": "Confidential" }] }
           ]
         },
         {
           "id": "earlyAccess",
           "name": [
-            { "culture": "en", "value": "Members may see assets before their go-live date" }
+            { "culture": "x-default", "value": "Members may see assets before their go-live date" }
           ],
           "data_type": "boolean",
           "visibility": "advanced",
