@@ -11,7 +11,7 @@ These guides are for an agent that works in the Portals administration through t
 | [Shared component configurations](shared-components.md) | Why a change to a component configuration can show on several pages, and how to change one page only. |
 | [Texts versus resources](texts-vs-resources.md) | When a text belongs to one component and when it is a resource shared by many pages, and what to do before changing a resource. |
 
-The backend MCP tools also list these guides through `documents_list`.
+The backend MCP tools also list these guides through `documents_search`, and `document_get` returns their text.
 
 If you are new to administrator-side work, start from [Administrator-side development](../README.md).
 

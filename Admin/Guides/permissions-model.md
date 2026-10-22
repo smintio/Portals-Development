@@ -17,7 +17,7 @@ A backend user gets permission flags through the backend user groups the user be
 
 - A tool needs the flags the `permissions_list` tool names for it. A call without them is refused.
 - A backend user can only work in a portal the user belongs to. Without membership the call is refused, unless the user holds `read_portals`.
-- A few tools need no flag, only any backend user. `documents_list`, `feedback_submit`, `current_user_get` and `permissions_list` are examples.
+- A few tools need no flag, only any backend user. `documents_search`, `feedback_submit`, `current_user_get` and `permissions_list` are examples.
 - `permissions_list` also returns presets that mirror the roles of the admin UI, administrator, portal administrator and portal editor. Send their flags to `backend_user_group_update` to build a group.
 
 ### Special users
