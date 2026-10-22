@@ -42,13 +42,11 @@ The search page reads one data source. The attribute must be indexed in that dat
 
 ## Options of an indexed attribute
 
-The model is the metadata attribute. The table lists each property, its allowed values and what each value does.
-
 | Property | Allowed values or meaning |
 |---|---|
 | `json_path_selector` | The JSON path selector of the attribute |
 | `labels` | The localized strings |
-| `display_type` | `default` shows the value in its standard format, a date without time and a decimal number with 2 digits. `date_short`, `date_medium`, `date_long` show a date without time. `date_time_short`, `date_time_medium`, `date_time_long` show date and time. The short, medium and long variants look the same. `number_no_digits` shows a decimal number without digits after the point. On a date attribute, `date_min` offers a "From" date field in the search filter, `date_max` an "Until" field, `date_min_max` both, instead of a list of values. `chip_always`, `chip_never` are not described |
+| `display_type` | `default` shows a date without time and a decimal number with 2 digits. `date_short`, `date_medium`, `date_long` show a date, `date_time_short`, `date_time_medium`, `date_time_long` a date and time, and the three lengths look the same. `number_no_digits` shows a number without decimals. On a date attribute, `date_min` offers a "From" field in the search filter, `date_max` an "Until" field, `date_min_max` both. `chip_always` and `chip_never` have no effect, leave them out |
 | `column_count_desktop`, `column_count_mobile` | The width of the attribute in the metadata view of the asset detail page, in columns of a 12 column grid, 1 to 12. Mobile falls back to desktop, and 12 is the default |
 | `index_type` | `fragment` indexes the value as a search fragment, so the search page can offer it as a filter. `default` is treated as `fragment`. `full_text` indexes the value for full text search only, it does not become a filter. `none` does not index the value |
 | `exclude_from_global_full_text_index` | Removes the content of the field completely from the global full text index |
@@ -57,7 +55,7 @@ The model is the metadata attribute. The table lists each property, its allowed 
 | `include_empty_values` | Includes empty values in the field selection |
 | `number_of_values_to_display` | The number of filter values shown before the rest is offered on request, 15 by default |
 | `default_sort` | The sort direction when this attribute sorts the results. `desc` sorts descending. `default` and `asc` sort ascending |
-| `values_sort` | The order of the filter values. `count_desc` and `default` list the values with most assets first. `count_asc` lists the values with fewest assets first. `natural_asc` and `natural_desc` sort by name, ascending or descending. For date range filters they use the range order, from short to long |
+| `values_sort` | The order of the filter values. `count_desc` and `default` put the values with most assets first, `count_asc` those with fewest. `natural_asc` and `natural_desc` sort by name. Date range filters keep their range order |
 | `is_default_sort_metadata_attribute` | Marks the default sort attribute |
 | `is_query_default_sort_metadata_attribute` | Marks the default sort attribute when a query string is given |
 | `split_values` | Splits values by common delimiters |
@@ -66,7 +64,7 @@ The model is the metadata attribute. The table lists each property, its allowed 
 
 ## After a change
 
-A change to a data adapter configuration can start an index run. The server then raises the version of the data adapter configuration by itself, so read the version again after a version conflict. The code does not state how long an index run takes before the filter shows.
+A change to a data adapter configuration can start an index run. The server then raises the version of the data adapter configuration by itself, so read the version again after a version conflict. An index run takes a while. Tell the person that the filter shows after it, and if it is still missing later, go through the steps of "If the filter is missing".
 
 ## Read more
 
