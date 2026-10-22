@@ -59,6 +59,7 @@ Removing a component from a page does not delete its component configuration. Af
 
 ## Read more
 
+- [Create and edit pages](https://documentation.smint.io/en/editing-pages-create-&-edit-pages/)
 - [Frontend UI components reference](https://github.com/smintio/Portals-Development/blob/main/Frontend/Legacy/docs/smintio-ui-components.md)
 - [Frontend page templates reference](https://github.com/smintio/Portals-Development/blob/main/Frontend/Legacy/docs/smintio-page-templates.md)
 - [Portal templates and resources](https://github.com/smintio/Portals-Development/blob/main/Backend/docs/smintio-portal-templates-and-resources.md)
