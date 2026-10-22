@@ -61,6 +61,8 @@ Administrator-side coding
 		- [Script reference](Admin/DynamicContentRouting/docs/smintio-dcr-script-reference.md)
 		- [Recipes: how do I …?](Admin/DynamicContentRouting/docs/smintio-dcr-recipes.md)
 
+	- [Guides for the backend MCP tools](Admin/Guides/), how an agent that works through the backend MCP tools handles drafts, permissions, search filters, shared components and resources
+
 Nothing in this area is compiled or deployed, which also means nothing catches a mistake before a
 live portal does. Each of these documents leads with the failure modes for that reason.
 
