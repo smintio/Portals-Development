@@ -22,6 +22,7 @@ The documents here are written with that in mind. Each one leads with the failur
 |---|---|
 | [Custom forms](CustomForms/) | Administrator-defined fields on portal user groups, data adapter configurations, assets search page configurations and resources. The way per-tenant configuration that Smint.io cannot anticipate gets into the platform. |
 | [Dynamic Content Routing](DynamicContentRouting/) | Per-user, per-request decisions about which assets a portal finds and which assets a user may open or download, derived from asset metadata and user group settings rather than from permissions assigned by hand. |
+| [Guides for the backend MCP tools](Guides/) | How an agent that works through the backend MCP tools handles drafts and live changes, permissions, search filters, shared component configurations and resources. |
 
 The two fit together. Custom forms supply the inputs — what this user is entitled to, what this
 page is for — and Dynamic Content Routing scripts read them to decide what to show. If you are
