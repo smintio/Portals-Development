@@ -1,7 +1,7 @@
 Building, testing and delivering a backend component
 ===================================================
 
-Current version of this document is: 2.1.1 (as of 15th of September, 2026)
+Current version of this document is: 2.2.0 (as of 23rd of October, 2026)
 
 How a Smint.io Portals backend component gets from a C# project to something running in a
 portal: the project setup, the test drivers that let you run a connector and a data adapter
@@ -375,6 +375,29 @@ Use ordinary semantic versioning, and treat these as breaking, because they are:
 
 Adding a configuration property, adding a method to a custom interface, and adding an interface
 to `PublicApiInterfaces` are all safe.
+
+### A new version must fit the configurations already saved
+
+Administrators have saved configurations for your component, in every tenant that uses it, and a
+new version reads them. When a new version is published to a Smint.io system, the platform checks
+it against all of them, and **rejects the version** if a saved value no longer fits:
+
+- **A configuration property keeps its type.** A property saved as a string cannot become a number,
+  and a property that was removed cannot come back later with another type under the same name.
+- **A value that is in use stays allowed.** Removing a member from an enum property, or a value
+  from an `AllowedValues` list, is rejected while a saved configuration still uses it. Values
+  nobody uses may go.
+
+The rejection names the property, the type or the value, and how many saved configurations are
+affected — never which tenant they belong to. What stays safe:
+
+- **adding a property** — give it a default, because existing configurations do not have a value
+  for it;
+- **removing a property** — its saved value is no longer read.
+
+There is no way to rename a property or to migrate a saved value: a rename is a removal plus an
+addition, and the value is lost. If a property needs another type, add a new property with a new
+name and stop reading the old one.
 
 Two things to say out loud when you hand over a new version:
 
