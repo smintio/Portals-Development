@@ -42,7 +42,7 @@ Access to them is restricted and is arranged with Smint.io — see
 1. [How we built our own components](#user-content-how-we-built-our-own-components)
 1. [Problems](#user-content-problems)
 
-Current version of this document is: 1.13.0 (as of 16th of September, 2026)
+Current version of this document is: 1.14.0 (as of 23rd of October, 2026)
 
 ## UI components
 
@@ -1127,6 +1127,25 @@ Running `npm run smint-io-pc` will package the component in the defined npm regi
 Please note that calling the command repeatedly with the same package version will result in an error.
 
 With each code change, the version number must be increased in the `package.json` file.
+
+#### A new version must fit the configurations already saved
+
+Administrators have saved configurations for your component, in every tenant that uses it, and a new version reads
+them. The registration step checks the new version against all of them and **rejects it** if a saved value no
+longer fits:
+
+- **A configurable property keeps its type.** A property saved as a string cannot become a number, and a property
+  that was removed cannot come back later with another type under the same name.
+- **A value that is in use stays allowed.** Removing a value from an `AllowedValues` list is rejected while a saved
+  configuration still uses it. Values nobody uses may go.
+
+The rejection names the property, the type or the value, and how many saved configurations are affected — never
+which tenant they belong to. Because `npm publish` has already run by then, **the rejected version number is
+taken**: fix the component and publish it with the next version.
+
+Adding a property is safe — give it a default, because existing configurations have no value for it — and so is
+removing one, whose saved value is then no longer read. There is no way to rename a property or to migrate a saved
+value: a rename is a removal plus an addition, and the value is lost.
 
 #### The two steps fail independently — and the second one needs your `.npmrc`
 
