@@ -16,7 +16,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SmintIo.Portals.DataAdapterSDK" Version="8.6.184" />
+    <PackageReference Include="SmintIo.Portals.DataAdapterSDK" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Connectors\Connector-HelloWorld\Connector-HelloWorld.csproj">
