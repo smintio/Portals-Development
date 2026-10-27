@@ -14,7 +14,7 @@ over its shoulder.
 | `Connectors/Connector-SharePoint` + `DataAdapters/DataAdapter-SharePoint` | a realistic pair **indexed through the integration layer**, and the only example implementing the integration layer provider |
 | `DataAdapters/Portals-*-TestDriver` | the test harnesses — one per pair |
 
-The stack is **C# on .NET 8**. Everything builds from
+The stack is **C# on .NET 10**. Everything builds from
 `Portals-SmintIo-BackendComponents.sln`.
 
 ## Read before writing component code
@@ -220,7 +220,7 @@ state the environment in the question.
 
 ### Decide these yourself — do not ask
 
-Target `net8.0`. Start `<Version>` at `1.0.0` for a new component, or at whatever the existing
+Target `net10.0`. Start `<Version>` at `1.0.0` for a new component, or at whatever the existing
 one is on. Follow the project layout and the partial-class split of the example you copied.
 Name every resource key — in `ConfigurationMessages` and in `MetamodelMessages` alike —
 `<kind>_<component key with hyphens as underscores>_…`, where the kind is `c` connector,
