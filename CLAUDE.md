@@ -31,7 +31,7 @@ adapter assembly — **win-x64 only**, unlike the other two).
 
 - Consumes `SmintIo.Portals.ConnectorSDK`, `SmintIo.Portals.DataAdapterSDK`,
   `SmintIo.Portals.DataAdapterSDK.TestDriver`, `SmintIo.Portals.SDK.Core`, and the
-  `Connector.Test` and `DataAdapter.Test` packages. All examples are net8.0.
+  `Connector.Test` and `DataAdapter.Test` packages. All examples are net10.0.
 
 Start from `HelloWorld` for the shape of a component, then read `Picturepark` or `SharePoint` for
 how a real source system is handled. The components Smint.io ships in production are maintained
