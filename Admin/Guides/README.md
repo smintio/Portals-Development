@@ -8,6 +8,7 @@ These guides are for an agent that works in the Portals administration through t
 | [Drafts and live](drafts-and-live.md) | Which changes are saved as a draft for review and which are live at once, and the safe order of work for page edits. |
 | [Permissions model](permissions-model.md) | How backend users and frontend users get their permissions, and how to find out why a call was refused. |
 | [From a source attribute to a portal search filter](search-pipeline.md) | The two steps that turn an attribute of a source system into a filter in the portal search, and what to check when a filter is missing. |
+| [Set up SharePoint and OneDrive](sharepoint-setup.md) | How to set up the SharePoint and OneDrive connectors, standard or high security mode, what the Azure app registration needs, and the order of work from the sign in to the folders. |
 | [Shared component configurations](shared-components.md) | Why a change to a component configuration can show on several pages, and how to change one page only. |
 | [Texts versus resources](texts-vs-resources.md) | When a text belongs to one component and when it is a resource shared by many pages, and what to do before changing a resource. |
 
