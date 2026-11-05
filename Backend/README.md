@@ -520,7 +520,7 @@ the interface as an npm package for further comfort.*
 
 ## Building, testing and delivery
 
-A backend component is an ordinary .NET 8 class library referencing the Smint.io SDK packages.
+A backend component is an ordinary .NET 10 class library referencing the Smint.io SDK packages.
 
 The path from source to a running portal has three steps, and the third is not self-service:
 
@@ -559,7 +559,7 @@ suite, what the review looks at, and versioning — is in
 
 - [ ] the component `Key` is the one Smint.io issued, and unchanged from the released version
 - [ ] `<Version>` bumped in the project file
-- [ ] `TargetFramework` is `net8.0`, and the SDK package versions match across your projects
+- [ ] `TargetFramework` is `net10.0`, and the SDK package versions match across your projects
 - [ ] every configuration property has a `DisplayName` with exactly one default culture, and a
       `ConfigurationMessages` resource file backs them
 - [ ] no configuration property renamed since the last release

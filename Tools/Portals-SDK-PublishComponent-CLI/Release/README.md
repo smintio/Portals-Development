@@ -184,13 +184,13 @@ Optionally, backend developers can register the tool as a global CLI tool:
     - dotnet tool install --global --add-source `<SMINT-IO-PRIVATE-SOURCE-FEED>` SmintIo.Portals.SDK.PublishComponent.CLI
 1. Confirm the message
     - You can invoke the tool using the following command: smint-io-pc
-    - Tool 'smintio.portals.sdk.publishcomponent.cli' (version '2.0.0.0') was successfully installed
+    - Tool 'smintio.portals.sdk.publishcomponent.cli' (version '4.0.0.0') was successfully installed
 	- The version number may vary
 	- You can then invoke the tool using the following command: `smint-io-pc`
 1. Go to the .NET global tools folder
 	- For Windows, go to `%USERPROFILE%\.dotnet\tools`
 	- For Linux, go to `$HOME/.dotnet/tools`
-1. Go to folder `.store\smintio.portals.sdk.publishcomponent.cli\2.0.0.0\smintio.portals.sdk.publishcomponent.cli\2.0.0.0\tools\net8.0\any`
+1. Go to folder `.store\smintio.portals.sdk.publishcomponent.cli\4.0.0.0\smintio.portals.sdk.publishcomponent.cli\4.0.0.0\tools\net10.0\any`
 	- The version number may vary
 1. Edit the applicable development, staging, and/or production app settings files similarly to [App settings](#user-content-app-settings)
 1. Useful links
@@ -202,7 +202,7 @@ Optionally, backend developers can register the tool as a global CLI tool:
 1. Run
 	- dotnet tool uninstall --global SmintIo.Portals.SDK.PublishComponent.CLI
 1. Confirm the message
-	- 'Tool 'smintio.portals.sdk.publishcomponent.cli' (version '2.0.0.0') was successfully uninstalled.'
+	- 'Tool 'smintio.portals.sdk.publishcomponent.cli' (version '4.0.0.0') was successfully uninstalled.'
 
 #### Publish using the registered global CLI tool
 
