@@ -43,7 +43,7 @@ var regions = getUserStringArrayCustomFormFieldValues("regions") ?? [];
 regions = regions.filter((region) => !!region);
 
 if (regions.length > 0) {
-  setFormFieldValueStringArray("rawData.c101___CR.region", regions, "Filter");
+  setFormFieldValueStringArray("rawData.c101___CR.region", regions);
 }
 
 addNotAllowedSearchFragment("rawData.c101___CR.region");
@@ -97,7 +97,7 @@ if (regions.length === 0) {
   regions = ["-"];
 }
 
-setFormFieldValueStringArray("rawData.c101___CR.region", regions, "Filter");
+setFormFieldValueStringArray("rawData.c101___CR.region", regions);
 addNotAllowedSearchFragment("rawData.c101___CR.region");
 ```
 
@@ -580,9 +580,9 @@ Use the hint on every value your routing sets in a portal that offers folder nav
 it the folder tree advertises folders the user cannot open anything in — a small leak of
 structure, and a confusing experience.
 
-**Mistakes this invites.** Passing `"DCR"` where `"Filter"` is what the data adapter needs, or the
-reverse. The two hints answer different questions and a data adapter that uses one may ignore the
-other; check which your connector expects.
+**Mistakes this invites.** Setting the hint on some of the routing values and not on others: the
+folder counts then ignore the values without it. `"Filter"` is a different hint, read currently by
+the Picturepark data adapter only; it does not replace `"DCR"`.
 
 ## How do I reuse the source system's own permission identifiers?
 
