@@ -183,6 +183,10 @@ not pass it vacuously. Write the check so that a missing value is a denial.
 means more access composes cleanly with group membership. A dimension where a value *removes*
 access does not, and produces a scheme where adding someone to a group takes their content away.
 
+Dynamic Content Routing relies on the fragment combining its values with *OR*, the default;
+a fragment set to *AND* turns more values into fewer assets (see
+[the script reference](docs/smintio-dcr-script-reference.md#user-content-several-values-any-of-them-or-all-of-them)).
+
 **Keep the public baseline explicit.** Where some content is open to everyone, express that as a
 value every user gets — pushed onto the list in the script — rather than as an exception branch.
 The rule stays one shape, and the validate script mirrors it without a special case.

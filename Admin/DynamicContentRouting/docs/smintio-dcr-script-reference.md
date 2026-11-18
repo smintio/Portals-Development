@@ -312,6 +312,21 @@ user selected. When you want to narrow rather than replace, read first, intersec
 back; that is the shape of
 [the limit-the-options recipe](smintio-dcr-recipes.md#user-content-how-do-i-let-the-user-keep-filtering-but-only-within-what-they-are-allowed-to-see).
 
+### Several values: any of them, or all of them
+
+On an Integration Layer data adapter, the values of one fragment combine the way that fragment's
+metadata attribute is set in the data adapter configuration. By default an asset matches when it
+has **any** of them (OR). With *Find assets that have all selected values* switched on, it must have
+**all** of them (AND). The values a script writes follow the same setting as the user's; there is no
+separate mode for scripts, with or without the `"DCR"` hint.
+
+Routing almost always means "OR": a user allowed three regions should see assets of any of the
+three. On a fragment set to "AND", the same script finds only assets tagged with all three
+regions, usually none. Route on fragments left at the default, and check the setting of a
+fragment before you rely on its values being a union. The setting exists only for fragments that
+hold several values per asset (lists, split values, fields of a record list); other data adapters
+run their own search and ignore it.
+
 The getters are **type-checked**. `getFormFieldValueStringArray` returns `null` if the stored
 value is a string rather than a string array, even though the id matches. Read with the accessor
 that matches how the fragment is declared, not with the one that matches what you intend to
@@ -321,8 +336,8 @@ write.
 
 | Hint | Meaning |
 |---|---|
-| `"Filter"` | On data adapters that distinguish a hard filter from an aggregation filter, marks this value as the hard filter. |
 | `"DCR"` | Keeps the value applied while the user is **browsing folders**. |
+| `"Filter"` | Currently read only by the Picturepark data adapter, which distinguishes a hard filter from an aggregation filter: marks this value as the hard filter. Leave it out elsewhere. |
 
 The `"DCR"` hint deserves a sentence of its own. When a portal shows folder navigation, the
 platform counts the assets behind each folder so that empty folders can be hidden, and it
@@ -352,7 +367,7 @@ the fragment" is the basic Dynamic Content Routing move: the user cannot see the
 are routing on and cannot widen it.
 
 ```javascript
-setFormFieldValueStringArray(regionKey, allowedRegions, "Filter");
+setFormFieldValueStringArray(regionKey, allowedRegions);
 addNotAllowedSearchFragment(regionKey);
 ```
 
@@ -540,6 +555,9 @@ if (getMethodName() !== "GetAssetsDownloadItemMappingsAsync") {
   keeps running, and a later statement can overwrite it or fail.
 - **Using the shortened entity key in an asset path, or the expanded one in a search fragment
   id.** Both fail silently in opposite directions.
+- **Routing on a fragment set to "AND".** Your list of allowed values then means
+  "has every one of them", not "has any of them", and the search usually comes back empty. See
+  [several values](#user-content-several-values-any-of-them-or-all-of-them).
 - **Matching on display names instead of enum keys.** Works today, breaks when someone renames a
   taxonomy value or a user switches language.
 - **Treating a user-scope read as a scalar.** It is always an array, merged across the user's
