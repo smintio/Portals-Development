@@ -27,14 +27,14 @@ code review. That is a security requirement and it shapes the schedule.
 
 ## The project
 
-A backend component is an ordinary .NET class library. **Target `net8.0`.**
+A backend component is an ordinary .NET class library. **Target `net10.0`.**
 
 A connector project:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>MyCompany.Portals.Connector.MyService</AssemblyName>
     <Version>1.0.0</Version>
   </PropertyGroup>
@@ -416,7 +416,7 @@ Two things to say out loud when you hand over a new version:
 
 - [ ] the component `Key` is the one Smint.io issued, and unchanged from the released version
 - [ ] `<Version>` bumped
-- [ ] `TargetFramework` is `net8.0`, and the SDK package versions match across your projects
+- [ ] `TargetFramework` is `net10.0`, and the SDK package versions match across your projects
 - [ ] the data adapter's project reference to the connector carries `Private="false"` and
       `ExcludeAssets="runtime"`
 - [ ] `ConfigurationMessages` is declared and every configuration property has a `DisplayName`
