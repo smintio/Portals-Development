@@ -36,7 +36,6 @@ A resource is a shared item such as a text, an image or a video that a component
 - Page edits belong to one person and one page, and every session of that person shares them. After a discard in another session, `page_edit_get` and both saves name the time of the discard.
 - An empty value in a `values` operation clears the field at the save. An `add` leaves empty values out.
 - A slot that falls below its minimum count is noted by `page_edit_add` and refused at the save, so add a component back first.
-- `page_edit_save_draft` refuses page edits with more than one new component and keeps them. Discard the extra adds, or save live after the person agrees. A live save of several new components works.
 - A page created or set to disabled is hidden and cannot be previewed, so its PreviewUrl does not open it. Make it visible with `page_settings_update` and `disabled` false, then save the draft again.
 - Both saves need the current page `version`. A changed page is refused and the answer names the new version.
 - The PreviewUrl holds a sign in token of the portal. Show it only to the person who reviews.
