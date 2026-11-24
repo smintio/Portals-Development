@@ -17,6 +17,34 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
     {
         private const string _retryAfter = "Retry-After";
 
+        // a permanent error as well, the one code we have seen with a suffix, e.g. Sandbox_VideoProcessing_CorruptInput_1894.08ce
+
+        private const string _corruptInputErrorCode = "Sandbox_VideoProcessing_CorruptInput";
+
+        // permanent errors, occuring when reading streams: the returned stream is NULL
+        // SharePoint reports them in the Graph error, the x-errorcode header or, from the media CDN, in the body only
+
+        private static readonly string[] _permanentErrorCodes =
+        [
+            "VideoProcessing_ByteStreamTypeNotSupported",
+            "SubStreamCached_GeneralFailure",
+            "SubStreamCached_FormatNotSupported",
+            "SubStreamCached_FileTooBig",
+            "SubStreamCached_SandboxTimeout",
+            "SubStreamCached_SandBoxFailure",
+            "SubStreamCached_BadRequest",
+            "SubStreamCached_ImageProcessingFailure",
+            "SubStreamCached_VideoThumbnailProcessingFailure",
+            "SubStreamCached_Fatal",
+            "Sandbox_VideoProcessing_InvalidData",
+            "Service_InvalidInput_FileTooBigToConvert",
+            "OfficeConversion_BadRequest",
+            "VideoBitrateUnsupported_BitrateTooHigh",
+            "Web_416RequestedRangeNotSatisfiable",
+            "RequestedRangeNotSatisfiable",
+            "BadArgument"
+        ];
+
         private readonly ILogger _logger;
 
         public SharepointDefaultRequestFailedHandler(ILogger logger)
@@ -32,30 +60,9 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
 
                 var message = serviceException.Message;
 
-                if (!string.IsNullOrEmpty(message))
+                if (ContainsPermanentErrorCode(message))
                 {
-                    if (message.Contains("VideoProcessing_ByteStreamTypeNotSupported") ||
-                        message.Contains("SubStreamCached_GeneralFailure") ||
-                        message.Contains("SubStreamCached_FormatNotSupported") ||
-                        message.Contains("SubStreamCached_FileTooBig") ||
-                        message.Contains("SubStreamCached_SandboxTimeout") ||
-                        message.Contains("SubStreamCached_SandBoxFailure") ||
-                        message.Contains("SubStreamCached_BadRequest") ||
-                        message.Contains("SubStreamCached_ImageProcessingFailure") ||
-                        message.Contains("SubStreamCached_VideoThumbnailProcessingFailure") ||
-                        message.Contains("SubStreamCached_Fatal") ||
-                        message.Contains("Sandbox_VideoProcessing_CorruptInput") ||
-                        message.Contains("Service_InvalidInput_FileTooBigToConvert") ||
-                        message.Contains("OfficeConversion_BadRequest") ||
-                        message.Contains("VideoBitrateUnsupported_BitrateTooHigh") ||
-                        message.Contains("Web_416RequestedRangeNotSatisfiable") ||
-                        message.Contains("RequestedRangeNotSatisfiable"))
-                    {
-                        // permanent error, occuring when reading streams
-                        // this will cause the returned stream to be NULL
-
-                        return Task.FromResult(RequestFailedHandlerResult.Ignore);
-                    }
+                    return Task.FromResult(RequestFailedHandlerResult.Ignore);
                 }
 
                 var errorCode = serviceException.Error?.Code;
@@ -92,17 +99,9 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
                     {
                         var innerErrorCode = serviceException.Error?.InnerError?.Code;
 
-                        if (!string.IsNullOrEmpty(innerErrorCode))
+                        if (IsPermanentErrorCode(innerErrorCode))
                         {
-                            if (string.Equals(innerErrorCode, "SubStreamCached_SandBoxFailure") ||
-                                string.Equals(innerErrorCode, "SubStreamCached_BadRequest") ||
-                                string.Equals(innerErrorCode, "SubStreamCached_VideoThumbnailProcessingFailure") ||
-                                string.Equals(innerErrorCode, "Sandbox_VideoProcessing_CorruptInput"))
-                            {
-                                // permanent error
-
-                                return Task.FromResult(RequestFailedHandlerResult.Ignore);
-                            }
+                            return Task.FromResult(RequestFailedHandlerResult.Ignore);
                         }
                     }
                 }
@@ -133,31 +132,9 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
                 {
                     var errorCode = values.First();
 
-                    if (!string.IsNullOrEmpty(errorCode))
+                    if (IsPermanentErrorCode(errorCode))
                     {
-                        if (string.Equals(errorCode, "VideoProcessing_ByteStreamTypeNotSupported") ||
-                            string.Equals(errorCode, "SubStreamCached_GeneralFailure") ||
-                            string.Equals(errorCode, "SubStreamCached_FormatNotSupported") ||
-                            string.Equals(errorCode, "SubStreamCached_FileTooBig") ||
-                            string.Equals(errorCode, "SubStreamCached_SandboxTimeout") ||
-                            string.Equals(errorCode, "SubStreamCached_SandBoxFailure") ||
-                            string.Equals(errorCode, "SubStreamCached_BadRequest") ||
-                            string.Equals(errorCode, "SubStreamCached_ImageProcessingFailure") ||
-                            string.Equals(errorCode, "SubStreamCached_VideoThumbnailProcessingFailure") ||
-                            string.Equals(errorCode, "SubStreamCached_Fatal") ||
-                            // e.g. Sandbox_VideoProcessing_CorruptInput_1894.08ce
-                            errorCode.StartsWith("Sandbox_VideoProcessing_CorruptInput") ||
-                            string.Equals(errorCode, "Service_InvalidInput_FileTooBigToConvert") ||
-                            string.Equals(errorCode, "OfficeConversion_BadRequest") ||
-                            string.Equals(errorCode, "VideoBitrateUnsupported_BitrateTooHigh") ||
-                            string.Equals(errorCode, "Web_416RequestedRangeNotSatisfiable") ||
-                            string.Equals(errorCode, "BadArgument"))
-                        {
-                            // permanent error, occuring when reading streams
-                            // this will cause the returned stream to be NULL
-
-                            return RequestFailedHandlerResult.Ignore;
-                        }
+                        return RequestFailedHandlerResult.Ignore;
                     }
                 }
 
@@ -165,15 +142,8 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
                 {
                     var content = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                    // a thumbnail download from the media CDN can report a failed video thumbnail in the body only
-
-                    if (!string.IsNullOrEmpty(content) &&
-                        (content.Contains("RequestedRangeNotSatisfiable") ||
-                         content.Contains("SubStreamCached_VideoThumbnailProcessingFailure")))
+                    if (ContainsPermanentErrorCode(content))
                     {
-                        // permanent error, occuring when reading streams
-                        // this will cause the returned stream to be NULL
-
                         return RequestFailedHandlerResult.Ignore;
                     }
                 }
@@ -192,6 +162,26 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
             }
 
             return await base.HandleHttpStatusExceptionAsync(httpStatusException).ConfigureAwait(false);
+        }
+
+        private static bool IsPermanentErrorCode(string errorCode)
+        {
+            if (string.IsNullOrEmpty(errorCode))
+            {
+                return false;
+            }
+
+            return _permanentErrorCodes.Contains(errorCode) || errorCode.StartsWith(_corruptInputErrorCode);
+        }
+
+        private static bool ContainsPermanentErrorCode(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            return _permanentErrorCodes.Any(text.Contains) || text.Contains(_corruptInputErrorCode);
         }
 
         /// <summary>
