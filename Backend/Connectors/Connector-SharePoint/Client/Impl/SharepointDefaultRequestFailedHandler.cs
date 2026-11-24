@@ -165,8 +165,11 @@ namespace SmintIo.Portals.Connector.SharePoint.Client.Impl
                 {
                     var content = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
+                    // a thumbnail download from the media CDN can report a failed video thumbnail in the body only
+
                     if (!string.IsNullOrEmpty(content) &&
-                        content.Contains("RequestedRangeNotSatisfiable"))
+                        (content.Contains("RequestedRangeNotSatisfiable") ||
+                         content.Contains("SubStreamCached_VideoThumbnailProcessingFailure")))
                     {
                         // permanent error, occuring when reading streams
                         // this will cause the returned stream to be NULL
