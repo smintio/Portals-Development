@@ -282,7 +282,9 @@ namespace SmintIo.Portals.DataAdapter.SharePoint.Assets
                     $"Could not determine item preview url for asset {assetId}. Revisit what Microsoft has changed");
             }
 
-            var url = downloadUrlMatch.Groups[1].Value;
+            // the match is a raw JSON string value, SharePoint may escape characters in it, e.g. & as &
+
+            var url = JsonConvert.DeserializeObject<string>($"\"{downloadUrlMatch.Groups[1].Value}\"");
 
             if (string.IsNullOrEmpty(url))
             {
